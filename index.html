@@ -1,14 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-<title>KruFoo Physics</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KruFoo Physics Lab</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+}
+
+.container{
+    width:min(900px,92%);
+    text-align:center;
+}
+
+.logo{
+    font-size:60px;
+    margin-bottom:20px;
+}
+
+h1{
+    font-size:52px;
+    margin-bottom:15px;
+}
+
+.subtitle{
+    font-size:22px;
+    opacity:.9;
+    margin-bottom:50px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:rgba(255,255,255,.12);
+    backdrop-filter:blur(12px);
+    border-radius:20px;
+    padding:28px;
+    transition:.25s;
+    cursor:pointer;
+    border:1px solid rgba(255,255,255,.15);
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    background:rgba(255,255,255,.18);
+}
+
+.icon{
+    font-size:42px;
+    margin-bottom:15px;
+}
+
+.title{
+    font-size:24px;
+    margin-bottom:10px;
+}
+
+.desc{
+    opacity:.85;
+    line-height:1.5;
+}
+
+footer{
+    margin-top:45px;
+    opacity:.75;
+    font-size:15px;
+}
+</style>
+
 </head>
 
 <body>
 
+<div class="container">
+
+<div class="logo">⚛️</div>
+
 <h1>KruFoo Physics Lab</h1>
 
-<p>Interactive Physics Learning</p>
+<div class="subtitle">
+Interactive Physics Learning
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="icon">🚀</div>
+<div class="title">Mechanics</div>
+<div class="desc">
+Motion, Force, Energy and Momentum
+</div>
+</div>
+
+<div class="card">
+<div class="icon">⚡</div>
+<div class="title">Electricity</div>
+<div class="desc">
+Electric Field, Flux and Potential
+</div>
+</div>
+
+<div class="card">
+<div class="icon">🌊</div>
+<div class="title">Waves</div>
+<div class="desc">
+Wave Motion, Sound and Light
+</div>
+</div>
+
+<div class="card">
+<div class="icon">🔥</div>
+<div class="title">Thermodynamics</div>
+<div class="desc">
+Ideal Gas, Pressure and Heat
+</div>
+</div>
+
+</div>
+
+<footer>
+Created by KruFoo • Physics Learning Lab
+</footer>
+
+</div>
 
 </body>
 </html>
