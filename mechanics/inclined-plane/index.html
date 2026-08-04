@@ -389,9 +389,29 @@ ctx.restore();
 // ----------------
 // มุม θ
 // ----------------
-
+if (deg>0) {
 
 ctx.strokeStyle="#000";
+
+ctx.lineWidth=4;
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+pivotX,
+pivotY
+);
+
+
+ctx.lineTo(
+endX,
+endY
+);
+
+
+ctx.stroke();ctx.strokeStyle="#000";
 
 ctx.lineWidth=3;
 
@@ -423,7 +443,7 @@ ctx.fillText(
 pivotX+85*Math.cos(theta/2),
 pivotY-85*Math.sin(theta/2)
 );
-
+}
 
 
 ctx.restore();
