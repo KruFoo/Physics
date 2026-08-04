@@ -7,7 +7,6 @@
 <title>KruFoo Physics Lab</title>
 
 <style>
-
 html,body{
     margin:0;
     overflow:hidden;
@@ -38,7 +37,6 @@ input{
     font-size:26px;
     font-weight:bold;
 }
-
 </style>
 
 </head>
@@ -51,7 +49,7 @@ input{
 <label>
 มุมเอียง
 <div id="value">θ = 20°</div>
-<input id="angle" type="range" min="0" max="60" value="20">
+<input id="angle" type="range" min="0" max="90" value="20">
 </label>
 </div>
 
@@ -66,10 +64,8 @@ const value=document.getElementById("value");
 
 
 function resize(){
-
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
 }
 
 window.onresize=resize;
@@ -79,37 +75,35 @@ resize();
 
 function arrow(x1,y1,x2,y2){
 
-ctx.strokeStyle="#d60000";
-ctx.fillStyle="#d60000";
-ctx.lineWidth=5;
+    ctx.strokeStyle="#d60000";
+    ctx.fillStyle="#d60000";
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
 
 
-ctx.beginPath();
-ctx.moveTo(x1,y1);
-ctx.lineTo(x2,y2);
-ctx.stroke();
+    let a=Math.atan2(y2-y1,x2-x1);
 
 
-let a=Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath();
 
+    ctx.moveTo(x2,y2);
 
-ctx.beginPath();
+    ctx.lineTo(
+        x2-15*Math.cos(a-Math.PI/6),
+        y2-15*Math.sin(a-Math.PI/6)
+    );
 
-ctx.moveTo(x2,y2);
+    ctx.lineTo(
+        x2-15*Math.cos(a+Math.PI/6),
+        y2-15*Math.sin(a+Math.PI/6)
+    );
 
-ctx.lineTo(
-x2-15*Math.cos(a-Math.PI/6),
-y2-15*Math.sin(a-Math.PI/6)
-);
-
-ctx.lineTo(
-x2-15*Math.cos(a+Math.PI/6),
-y2-15*Math.sin(a+Math.PI/6)
-);
-
-ctx.closePath();
-ctx.fill();
-
+    ctx.closePath();
+    ctx.fill();
 }
 
 
@@ -117,50 +111,46 @@ ctx.fill();
 function draw(){
 
 ctx.clearRect(
-0,
-0,
-canvas.width,
-canvas.height
+    0,
+    0,
+    canvas.width,
+    canvas.height
 );
 
 
-
 let deg=Number(slider.value);
-
 let theta=deg*Math.PI/180;
 
 value.innerHTML="θ = "+deg+"°";
 
 
-
-// จุดหมุนซ้ายสุด
+// จุดหมุนซ้าย
 
 let pivotX=180;
 let pivotY=canvas.height*0.75;
 
 
-// ความยาวพื้นเอียง
+// ความยาวพื้น
 
-let planeLength=450;
-
-
-
-// ปลายขวาของพื้น
-
-let endX=pivotX+planeLength*Math.cos(theta);
-
-let endY=pivotY-planeLength*Math.sin(theta);
+let planeLength=350;
 
 
+// ปลายพื้น
+
+let endX=
+pivotX+planeLength*Math.cos(theta);
+
+let endY=
+pivotY-planeLength*Math.sin(theta);
 
 
-// --------------------
+
+// ---------------------
 // พื้นเอียง
-// --------------------
+// ---------------------
 
 ctx.strokeStyle="#666";
 ctx.lineWidth=8;
-
 
 ctx.beginPath();
 
@@ -178,24 +168,27 @@ ctx.stroke();
 
 
 
-// --------------------
-// กล่อง
-// --------------------
+// ---------------------
+// กล่องบนพื้น
+// ---------------------
+
+let boxDistance=200;
 
 
-// ตำแหน่งบนพื้นเอียง
+let bx=
+pivotX+boxDistance*Math.cos(theta);
 
-let boxDistance=230;
-
-
-let bx=pivotX+boxDistance*Math.cos(theta);
-let by=pivotY-boxDistance*Math.sin(theta);
+let by=
+pivotY-boxDistance*Math.sin(theta);
 
 
 
 ctx.save();
 
-ctx.translate(bx,by);
+ctx.translate(
+bx,
+by
+);
 
 ctx.rotate(-theta);
 
@@ -210,26 +203,24 @@ ctx.fillRect(
 );
 
 
-// --------------------
-// mg sin theta
-// --------------------
 
-
-// ความยาวตาม sine
+// ---------------------
+// mg sin(theta)
+// ---------------------
 
 let L=180*Math.sin(theta);
 
 
-// ทิศลงตามพื้นเอียง
-// จากกล่องย้อนกลับไปทางซ้ายล่าง
-
+// ขนานพื้นเอียง
+// ชี้ลงตามพื้นเอียง
 
 arrow(
 0,
 -22,
 -L*Math.cos(theta),
-L*Math.sin(theta)-22
+-22+L*Math.sin(theta)
 );
+
 
 
 ctx.fillStyle="#d60000";
@@ -239,7 +230,7 @@ ctx.font="24px sans-serif";
 ctx.fillText(
 "mg sinθ",
 -L/2-40,
-20
+30
 );
 
 
@@ -247,10 +238,9 @@ ctx.restore();
 
 
 
-
-// --------------------
-// มุม theta ที่ pivot
-// --------------------
+// ---------------------
+// มุม theta
+// ---------------------
 
 ctx.strokeStyle="#000";
 ctx.lineWidth=3;
@@ -277,17 +267,16 @@ ctx.font="26px sans-serif";
 
 ctx.fillText(
 deg+"°",
-pivotX+80*Math.cos(theta/2),
-pivotY-80*Math.sin(theta/2)
+pivotX+85*Math.cos(theta/2),
+pivotY-85*Math.sin(theta/2)
 );
 
 
 
 // จุดหมุน
 
-ctx.fillStyle="#000";
-
 ctx.beginPath();
+
 ctx.arc(
 pivotX,
 pivotY,
