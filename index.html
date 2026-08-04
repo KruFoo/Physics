@@ -7,6 +7,7 @@
 <title>KruFoo Physics Lab</title>
 
 <style>
+
 html,body{
     margin:0;
     overflow:hidden;
@@ -20,38 +21,47 @@ canvas{
 
 #ui{
     position:fixed;
-    left:40px;
-    bottom:40px;
-    width:320px;
+    left:25px;
+    bottom:20px;
+    width:260px;
 }
 
 label{
-    font-size:22px;
+    font-size:18px;
 }
 
 input{
     width:100%;
+    margin-top:5px;
 }
 
 #value{
-    font-size:26px;
+    font-size:22px;
     font-weight:bold;
 }
+
 </style>
 
 </head>
+
 
 <body>
 
 <canvas id="c"></canvas>
 
+
 <div id="ui">
 <label>
-มุมเอียง
-<div id="value">θ = 20°</div>
+
+<div id="value">
+มุมเอียง θ = 20°
+</div>
+
 <input id="angle" type="range" min="0" max="90" value="20">
+
 </label>
 </div>
+
 
 
 <script>
@@ -63,9 +73,12 @@ const slider=document.getElementById("angle");
 const value=document.getElementById("value");
 
 
+
 function resize(){
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
 }
 
 window.onresize=resize;
@@ -73,110 +86,193 @@ resize();
 
 
 
+
 function arrow(x1,y1,x2,y2){
 
-    ctx.strokeStyle="#d60000";
-    ctx.fillStyle="#d60000";
-    ctx.lineWidth=5;
-
-    ctx.beginPath();
-    ctx.moveTo(x1,y1);
-    ctx.lineTo(x2,y2);
-    ctx.stroke();
+ctx.strokeStyle="#d60000";
+ctx.fillStyle="#d60000";
+ctx.lineWidth=5;
 
 
-    let a=Math.atan2(y2-y1,x2-x1);
+ctx.beginPath();
+
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+
+ctx.stroke();
 
 
-    ctx.beginPath();
 
-    ctx.moveTo(x2,y2);
+let a=Math.atan2(y2-y1,x2-x1);
 
-    ctx.lineTo(
-        x2-15*Math.cos(a-Math.PI/6),
-        y2-15*Math.sin(a-Math.PI/6)
-    );
 
-    ctx.lineTo(
-        x2-15*Math.cos(a+Math.PI/6),
-        y2-15*Math.sin(a+Math.PI/6)
-    );
+ctx.beginPath();
 
-    ctx.closePath();
-    ctx.fill();
+ctx.moveTo(x2,y2);
+
+
+ctx.lineTo(
+x2-15*Math.cos(a-Math.PI/6),
+y2-15*Math.sin(a-Math.PI/6)
+);
+
+
+ctx.lineTo(
+x2-15*Math.cos(a+Math.PI/6),
+y2-15*Math.sin(a+Math.PI/6)
+);
+
+
+ctx.closePath();
+
+ctx.fill();
+
 }
+
 
 
 
 function draw(){
 
+
 ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
+0,
+0,
+canvas.width,
+canvas.height
 );
 
 
+
+// ย้ายภาพลงล่าง
+
+ctx.save();
+
+
+ctx.translate(
+canvas.width*0.10,
+canvas.height*0.12
+);
+
+
+ctx.scale(
+0.75,
+0.75
+);
+
+
+
 let deg=Number(slider.value);
+
 let theta=deg*Math.PI/180;
 
-value.innerHTML="θ = "+deg+"°";
+
+value.innerHTML=
+"มุมเอียง θ = "+deg+"°";
 
 
-// จุดหมุนซ้าย
+
+
+// จุดหมุนซ้ายล่าง
 
 let pivotX=180;
-let pivotY=canvas.height*0.75;
+
+let pivotY=canvas.height*0.72;
 
 
-// ความยาวพื้น
+
 
 let planeLength=350;
 
 
-// ปลายพื้น
 
 let endX=
 pivotX+planeLength*Math.cos(theta);
+
 
 let endY=
 pivotY-planeLength*Math.sin(theta);
 
 
 
-// ---------------------
-// พื้นเอียง
-// ---------------------
 
-ctx.strokeStyle="#666";
-ctx.lineWidth=8;
+
+// ----------------
+// พื้นเอียง
+// ----------------
+
+
+ctx.fillStyle="#bdbdbd";
+
 
 ctx.beginPath();
+
 
 ctx.moveTo(
 pivotX,
 pivotY
 );
 
+
 ctx.lineTo(
 endX,
 endY
 );
 
+
+ctx.lineTo(
+endX,
+pivotY
+);
+
+
+ctx.closePath();
+
+
+ctx.fill();
+
+
+
+
+
+ctx.strokeStyle="#666";
+
+ctx.lineWidth=8;
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+pivotX,
+pivotY
+);
+
+
+ctx.lineTo(
+endX,
+endY
+);
+
+
 ctx.stroke();
 
 
 
-// ---------------------
-// กล่องบนพื้น
-// ---------------------
+
+
+
+// ----------------
+// กล่อง
+// ----------------
+
 
 let boxDistance=200;
 
 
 let bx=
 pivotX+boxDistance*Math.cos(theta);
+
 
 let by=
 pivotY-boxDistance*Math.sin(theta);
@@ -185,15 +281,18 @@ pivotY-boxDistance*Math.sin(theta);
 
 ctx.save();
 
+
 ctx.translate(
 bx,
 by
 );
 
+
 ctx.rotate(-theta);
 
 
 ctx.fillStyle="#2f80ed";
+
 
 ctx.fillRect(
 -25,
@@ -203,34 +302,85 @@ ctx.fillRect(
 );
 
 
-
-// ---------------------
-// mg sin(theta)
-// ---------------------
-
-let L=180*Math.sin(theta);
+ctx.restore();
 
 
-// ขนานพื้นเอียง
-// ชี้ลงตามพื้นเอียง
+
+
+
+// ----------------
+// center of mass
+// ----------------
+
+
+let cmOffset=22.5;
+
+
+let startX=
+bx-cmOffset*Math.sin(theta);
+
+
+let startY=
+by-cmOffset*Math.cos(theta);
+
+
+
+
+
+// ----------------
+// mg sin theta
+// ----------------
+
+
+let L=
+180*Math.sin(theta);
+
+
+
+let finishX=
+startX-L*Math.cos(theta);
+
+
+let finishY=
+startY+L*Math.sin(theta);
+
+
+
 
 arrow(
--L*Math.cos(theta),
--22+L*Math.sin(theta),
-0,
--22
+startX,
+startY,
+finishX,
+finishY
 );
 
 
 
+
+
+// label mg sin theta
+
+ctx.save();
+
+
+ctx.translate(
+(startX+finishX)/2,
+(startY+finishY)/2
+);
+
+
+ctx.rotate(-theta);
+
+
 ctx.fillStyle="#d60000";
+
 ctx.font="24px sans-serif";
 
 
 ctx.fillText(
 "mg sinθ",
--L/2-40,
-30
+-45,
+-15
 );
 
 
@@ -238,15 +388,20 @@ ctx.restore();
 
 
 
-// ---------------------
-// มุม theta
-// ---------------------
+
+
+// ----------------
+// มุม θ
+// ----------------
+
 
 ctx.strokeStyle="#000";
+
 ctx.lineWidth=3;
 
 
 ctx.beginPath();
+
 
 ctx.arc(
 pivotX,
@@ -257,35 +412,25 @@ pivotY,
 true
 );
 
+
 ctx.stroke();
 
 
 
 ctx.fillStyle="#000";
-ctx.font="26px sans-serif";
+
+ctx.font="30px sans-serif";
 
 
 ctx.fillText(
-deg+"°",
+"θ",
 pivotX+85*Math.cos(theta/2),
 pivotY-85*Math.sin(theta/2)
 );
 
 
 
-// จุดหมุน
-
-ctx.beginPath();
-
-ctx.arc(
-pivotX,
-pivotY,
-8,
-0,
-Math.PI*2
-);
-
-ctx.fill();
+ctx.restore();
 
 
 
@@ -294,7 +439,9 @@ requestAnimationFrame(draw);
 }
 
 
+
 draw();
+
 
 </script>
 
