@@ -1,0 +1,251 @@
+	
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buoyancy Simulator - 3 Decimal Ratio</title>
+<style>
+body{
+ font-family:Arial,sans-serif;
+ background:#eef6ff;
+ padding:20px;
+}
+.container{
+ max-width:1000px;
+ margin:auto;
+ background:white;
+ padding:25px;
+	 
+ border-radius
+	 :15px;
+ box-shadow:0 
+	 10px 25px rgba(0,0,0,.15);
+	}
+.main{
+ display:flex;
+ gap:30px;
+ flex-wrap:wrap;
+ justify-content:center;
+ align-items:center;
+}
+.tank{
+ width:300px;
+ height:300px;
+ border:5px solid #334155;
+ border-top:none;
+ border-radius:0 0 18px 18px;
+ position:relative;
+ overflow:hidden;
+ background:#dbeafe;
+}
+.water{
+ position:absolute;
+ bottom:0;
+ width:100%;
+ height:70%;
+ background:rgba(59,130,246,.55);
+}
+.waterline{
+ position:absolute;
+ width:100%;
+ bottom:70%;
+ border-top:3px dashed #2563eb;
+ z-index:5;
+}
+.block{
+ position:absolute;
+ width:80px;
+ height:80px;
+ left:110px;
+ background:linear-gradient(90deg,#92400e,#b45309,#78350f);
+ border:3px solid #713f12;
+ border-radius:4px;
+ transform:rotate(-2deg);
+ z-index:4;
+}
+.controls{
+ min-width:320px;
+ flex:1;
+}
+label{
+ display:block;
+ margin-top:15px;
+ font-weight:bold;
+}
+input[type=range]{
+ width:100%;
+}
+.card{
+ margin-top:15px;
+ background:#eff6ff;
+ padding:15px;
+ border-radius:12px;
+ line-height:1.7;
+}
+.status{
+ font-size:1.2rem;
+ font-weight:bold;
+ margin-top:10px;
+}
+button{
+ margin-top:15px;
+ padding:10px 15px;
+ border:none;
+ border-radius:10px;
+ background:#2563eb;
+ color:white;
+ cursor:pointer;
+}
+button:hover{
+ background:#1d4ed8;
+}
+.note{
+ margin-top:15px;
+ color:#475569;
+ font-size:0.95rem;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Realistic Buoyancy Simulator</h1>
+<p>
+This version uses a <b>3-decimal density ratio</b>. 
+A ratio of <b>1.000</b> is neutral buoyancy, while <b>1.001</b> starts sinking very slowly.
+</p>
+
+<div class="main">
+
+<div class="tank">
+<div class="water"></div>
+<div class="waterline"></div>
+<div class="block" id="block"></div>
+</div>
+
+<div class="controls">
+
+<label>Object Density:
+<span id="objVal">500</span> kg/m³
+</label>
+<input id="obj" type="range" min="100" max="2500" value="500" step="1">
+
+<label>Fluid Density:
+<span id="fluidVal">1000</span> kg/m³
+</label>
+<input id="fluid" type="range" min="300" max="1500" value="1000" step="1">
+
+<div class="card">
+<div>Theoretical Submerged: <b id="sub">50.0%</b></div>
+<div>Density Ratio: <b id="ratio">0.500</b></div>
+<div>Sink Speed: <b id="speed">0.00</b> px/s</div>
+<div class="status" id="status">Floating</div>
+</div>
+
+<button onclick="resetBlock()">Reset Position</button>
+
+<p class="note">
+Rule: ratio &lt; 1.000 = floating, ratio = 1.000 = neutral buoyancy,
+ratio ≥ 1.001 = sinking gradually.
+</p>
+
+</div>
+</div>
+</div>
+
+<script>
+const block = document.getElementById("block");
+const obj = document.getElementById("obj");
+const fluid = document.getElementById("fluid");
+
+const H = 80;
+const tankH = 300;
+const waterline = tankH * 0.70;
+
+let pos = waterline - (H * 0.5);
+let last = null;
+
+function floatingPosition(r){
+ return waterline - (H * r);
+}
+
+function resetBlock(){
+ const r = Number(obj.value) / Number(fluid.value);
+ if(r < 1){
+   pos = floatingPosition(r);
+ } else {
+   pos = waterline - H;
+ }
+ block.style.bottom = pos + "px";
+}
+
+function updateText(){
+ const od = Number(obj.value);
+ const fd = Number(fluid.value);
+ const r = od / fd;
+ const submerged = r * 100;
+
+ document.getElementById("objVal").textContent = od;
+ document.getElementById("fluidVal").textContent = fd;
+ document.getElementById("sub").textContent = submerged.toFixed(1) + "%";
+ document.getElementById("ratio").textContent = r.toFixed(3);
+
+ let speed = 0;
+
+ if(r < 1){
+   document.getElementById("status").textContent = "Floating";
+ }
+ else if(r >= 0.9995 && r < 1.0005){
+   document.getElementById("status").textContent = "Neutral Buoyancy";
+ }
+ else{
+   // Nonlinear speed: 1.001 sinks extremely slowly, high ratios sink much faster.
+   speed = Math.pow((r - 1) * 100, 1.5);
+   speed = Math.max(speed, 0.05);
+
+   document.getElementById("status").textContent = (pos <= 0.5)
+      ? "Sunk"
+      : "Sinking Gradually";
+ }
+
+ document.getElementById("speed").textContent = speed.toFixed(2);
+ return {r, speed};
+}
+
+function animate(t){
+ if(last === null) last = t;
+
+ const dt = (t - last) / 1000;
+ last = t;
+
+ const data = updateText();
+
+ if(data.r < 1){
+   const target = floatingPosition(data.r);
+   const bob = Math.sin(t / 500) * 2;
+   pos += (target - pos) * 0.08;
+   block.style.bottom = (pos + bob) + "px";
+ }
+ else if(data.r >= 0.9995 && data.r < 1.0005){
+   const target = waterline - H;
+   pos += (target - pos) * 0.05;
+   block.style.bottom = pos + "px";
+ }
+ else{
+   pos -= data.speed * dt;
+   if(pos < 0) pos = 0;
+   block.style.bottom = pos + "px";
+ }
+
+ requestAnimationFrame(animate);
+}
+
+obj.addEventListener("input", updateText);
+fluid.addEventListener("input", updateText);
+
+resetBlock();
+requestAnimationFrame(animate);
+</script>
+
+</body>
+</html>
