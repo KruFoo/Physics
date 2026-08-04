@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Critical Angle</title>
+
+<style>
+
+body{
+  font-family:Arial,sans-serif;
+  padding:20px;
+  font-size:18px;
+}
+
+canvas{
+  border:1px solid #888;
+  max-width:100%;
+  height:auto;
+}
+
+input[type=range]{
+  width:100%;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<canvas id="c" width="800" height="500"></canvas>
+
+<div>
+
+  มุมตกกระทบ:
+  <span id="angleVal">30</span>°
+
+  <div id="info1"></div>
+  <div id="info2"></div>
+
+  <input type="range" id="angle" min="0" max="89" value="30">
+
+</div>
+
+<script>
+
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+
+const slider=document.getElementById('angle');
+const angleVal=document.getElementById('angleVal');
+
+const info1=document.getElementById('info1');
+const info2=document.getElementById('info2');
+
+const n1=1.33;
+const n2=1.00;
+
+const critical=Math.asin(n2/n1)*180/Math.PI;
+
+function draw(){
+
+  const deg=Number(slider.value);
+  angleVal.textContent=deg;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const cx=400;
+  const cy=250;
+
+  // น้ำ
+  ctx.fillStyle="#cfefff";
+  ctx.fillRect(0,cy,canvas.width,canvas.height-cy);
+
+  // ผิวแบ่งตัวกลาง
+  ctx.lineWidth=1;
+  ctx.strokeStyle="black";
+  ctx.beginPath();
+  ctx.moveTo(0,cy);
+  ctx.lineTo(canvas.width,cy);
+  ctx.stroke();
+
+  // เส้นปกติ
+  ctx.setLineDash([5,5]);
+  ctx.beginPath();
+  ctx.moveTo(cx,0);
+  ctx.lineTo(cx,canvas.height);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ข้อความ
+  ctx.fillStyle="black";
+
+  ctx.font="32px Arial";
+  ctx.fillText("n",20,220);
+  ctx.fillText("n",20,290);
+  ctx.fillText("water to air",140,490);
+
+  ctx.font="16px Arial";
+  ctx.fillText("air = 1",40,220);
+  ctx.fillText("water = 1.33",40,290);
+
+  const thetaI=deg*Math.PI/180;
+  const L=180;
+
+  // รังสีตกกระทบ
+  const x1=cx-L*Math.sin(thetaI);
+  const y1=cy+L*Math.cos(thetaI);
+
+  ctx.lineWidth=3;
+  ctx.strokeStyle="red";
+
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(cx,cy);
+  ctx.stroke();
+
+  // กฎของสเนลล์
+  const sinR=(n1/n2)*Math.sin(thetaI);
+
+  if(sinR<=1){
+
+    const thetaR=Math.asin(sinR);
+
+    const x2=cx+L*Math.sin(thetaR);
+    const y2=cy-L*Math.cos(thetaR);
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+
+    info1.innerHTML="";
+    info2.innerHTML="มุมวิกฤต = "+critical.toFixed(1)+"°";
+
+  }else{
+
+    // สะท้อนกลับหมด
+    const x3=cx+L*Math.sin(thetaI);
+    const y3=cy+L*Math.cos(thetaI);
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(x3,y3);
+    ctx.stroke();
+
+    info1.innerHTML="";
+    info2.innerHTML="สะท้อนกลับหมด (เพราะมุมตกกระทบใหญ่)";
+
+  }
+
+}
+
+slider.addEventListener("input",draw);
+
+draw();
+
+</script>
+
+</body>
+</html>
