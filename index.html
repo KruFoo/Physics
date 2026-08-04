@@ -1,19 +1,185 @@
-// ----------------
-// mg sin(theta)
-// ขนานกับพื้นเอียงลง
-// ขนาดแปรตาม sin(theta)
-// ----------------
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KruFoo Physics Lab</title>
 
-let L = 200 * Math.sin(t);
+<style>
+html,body{
+    margin:0;
+    overflow:hidden;
+    background:#f5f5f5;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
 
+canvas{
+    display:block;
+}
+
+#ui{
+    position:fixed;
+    left:40px;
+    bottom:40px;
+    width:320px;
+}
+
+label{
+    font-size:22px;
+}
+
+input{
+    width:100%;
+    margin-top:10px;
+}
+
+#value{
+    font-size:26px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="ui">
+<label>
+มุมเอียง
+<div id="value">θ = 20°</div>
+<input id="angle" type="range" min="0" max="60" value="20">
+</label>
+</div>
+
+
+<script>
+
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
+
+const slider=document.getElementById("angle");
+const value=document.getElementById("value");
+
+
+function resize(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+}
+
+window.onresize=resize;
+resize();
+
+
+
+function arrow(x1,y1,x2,y2){
+
+    ctx.strokeStyle="#d60000";
+    ctx.fillStyle="#d60000";
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+
+
+    let a=Math.atan2(y2-y1,x2-x1);
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(x2,y2);
+
+    ctx.lineTo(
+        x2-14*Math.cos(a-Math.PI/6),
+        y2-14*Math.sin(a-Math.PI/6)
+    );
+
+    ctx.lineTo(
+        x2-14*Math.cos(a+Math.PI/6),
+        y2-14*Math.sin(a+Math.PI/6)
+    );
+
+    ctx.closePath();
+    ctx.fill();
+
+}
+
+
+
+function draw(){
+
+ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+);
+
+
+let deg=Number(slider.value);
+let t=deg*Math.PI/180;
+
+
+value.innerHTML="θ = "+deg+"°";
+
+
+
+let cx=canvas.width*0.45;
+let cy=canvas.height*0.72;
+
+
+
+// =================
+// วาดพื้นเอียง
+// =================
+
+ctx.save();
+
+ctx.translate(cx,cy);
+
+ctx.rotate(-t);
+
+
+ctx.strokeStyle="#666";
+ctx.lineWidth=8;
+
+ctx.beginPath();
+ctx.moveTo(-250,0);
+ctx.lineTo(250,0);
+ctx.stroke();
+
+
+
+// กล่อง
+
+ctx.fillStyle="#2f80ed";
+ctx.fillRect(-25,-45,50,45);
+
+
+
+/*
+    mg sin(theta)
+
+    ขนานพื้นเอียง
+    ขนาด = sin(theta)
+*/
+
+
+let L=200*Math.sin(t);
+
+
+// เริ่มจากกล่อง
+// ชี้ลงตามพื้นเอียง
 
 arrow(
     0,
     -22,
     L,
-    0,
-    "#d60000"
+    -22
 );
+
 
 
 ctx.fillStyle="#d60000";
@@ -21,6 +187,69 @@ ctx.font="24px sans-serif";
 
 ctx.fillText(
     "mg sinθ",
-    L/2,
-    -20
+    L/2-30,
+    -35
 );
+
+
+
+ctx.restore();
+
+
+
+
+// =================
+// วาดมุมเอียง
+// =================
+
+
+ctx.save();
+
+ctx.translate(cx,cy);
+
+
+ctx.strokeStyle="#000";
+ctx.lineWidth=3;
+
+
+ctx.beginPath();
+
+ctx.arc(
+    0,
+    0,
+    70,
+    -Math.PI/2,
+    -Math.PI/2+t
+);
+
+ctx.stroke();
+
+
+
+ctx.fillStyle="#000";
+ctx.font="24px sans-serif";
+
+
+ctx.fillText(
+    deg+"°",
+    45*Math.cos(t/2),
+    -45*Math.sin(t/2)
+);
+
+
+
+ctx.restore();
+
+
+
+requestAnimationFrame(draw);
+
+}
+
+
+draw();
+
+</script>
+
+</body>
+</html>
