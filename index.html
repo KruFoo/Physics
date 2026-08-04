@@ -32,6 +32,11 @@ input{
     width:100%;
     margin-top:10px;
 }
+
+#value{
+    font-size:26px;
+    font-weight:bold;
+}
 </style>
 </head>
 
@@ -42,27 +47,34 @@ input{
 <div id="ui">
 <label>
 มุมเอียง
+<div id="value">θ = 20°</div>
 <input id="angle" type="range" min="0" max="60" value="20">
 </label>
 </div>
+
 
 <script>
 
 const canvas=document.getElementById("c");
 const ctx=canvas.getContext("2d");
+
 const slider=document.getElementById("angle");
+const value=document.getElementById("value");
+
 
 function resize(){
     canvas.width=window.innerWidth;
     canvas.height=window.innerHeight;
 }
+
 window.onresize=resize;
 resize();
 
-function arrow(x1,y1,x2,y2){
 
-    ctx.strokeStyle="#d60000";
-    ctx.fillStyle="#d60000";
+function arrow(x1,y1,x2,y2,color="#d60000"){
+
+    ctx.strokeStyle=color;
+    ctx.fillStyle=color;
     ctx.lineWidth=5;
 
     ctx.beginPath();
@@ -70,73 +82,183 @@ function arrow(x1,y1,x2,y2){
     ctx.lineTo(x2,y2);
     ctx.stroke();
 
+
     let a=Math.atan2(y2-y1,x2-x1);
 
     ctx.beginPath();
+
     ctx.moveTo(x2,y2);
+
     ctx.lineTo(
-        x2-12*Math.cos(a-Math.PI/6),
-        y2-12*Math.sin(a-Math.PI/6)
+        x2-14*Math.cos(a-Math.PI/6),
+        y2-14*Math.sin(a-Math.PI/6)
     );
+
     ctx.lineTo(
-        x2-12*Math.cos(a+Math.PI/6),
-        y2-12*Math.sin(a+Math.PI/6)
+        x2-14*Math.cos(a+Math.PI/6),
+        y2-14*Math.sin(a+Math.PI/6)
     );
+
     ctx.closePath();
     ctx.fill();
 
 }
 
+
+
 function draw(){
 
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    let deg=Number(slider.value);
-    let t=deg*Math.PI/180;
 
-    let cx=canvas.width*0.45;
-    let cy=canvas.height*0.72;
+let deg=Number(slider.value);
+let t=deg*Math.PI/180;
 
-    ctx.save();
+value.innerHTML="θ = "+deg+"°";
 
-    ctx.translate(cx,cy);
-    ctx.rotate(-t);
 
-    // พื้นเอียง
+let cx=canvas.width*0.45;
+let cy=canvas.height*0.72;
 
-    ctx.strokeStyle="#666";
-    ctx.lineWidth=8;
 
-    ctx.beginPath();
-    ctx.moveTo(-220,0);
-    ctx.lineTo(220,0);
-    ctx.stroke();
+ctx.save();
 
-    // กล่อง
+ctx.translate(cx,cy);
 
-    ctx.fillStyle="#2f80ed";
-    ctx.fillRect(-25,-45,50,45);
+ctx.rotate(-t);
 
-    // mg sin(theta)
 
-    let L=140*Math.sin(t);
+// ----------------
+// พื้นเอียง
+// ----------------
 
-    arrow(
-        0,
-        -22,
-        0,
-        -22+L
-    );
+ctx.strokeStyle="#666";
+ctx.lineWidth=8;
 
-    ctx.fillStyle="#d60000";
-    ctx.font="24px sans-serif";
-    ctx.fillText("mg sinθ",20,-5+L/2);
+ctx.beginPath();
+ctx.moveTo(-250,0);
+ctx.lineTo(250,0);
+ctx.stroke();
 
-    ctx.restore();
 
-    requestAnimationFrame(draw);
+
+// ----------------
+// กล่อง
+// ----------------
+
+ctx.fillStyle="#2f80ed";
+
+ctx.fillRect(-25,-45,50,45);
+
+
+
+// ----------------
+// มุมเอียง
+// ----------------
+
+ctx.restore();
+
+
+ctx.save();
+
+ctx.translate(cx,cy);
+
+ctx.strokeStyle="#000";
+ctx.lineWidth=3;
+
+ctx.beginPath();
+
+ctx.arc(
+0,
+0,
+60,
+-Math.PI/2,
+-Math.PI/2+t,
+false
+);
+
+ctx.stroke();
+
+
+ctx.fillStyle="#000";
+ctx.font="24px sans-serif";
+
+ctx.fillText(
+deg+"°",
+35*Math.cos(t/2)-10,
+-35*Math.sin(t/2)
+);
+
+ctx.restore();
+
+
+
+// กลับเข้าพิกัดพื้นเอียง
+
+ctx.save();
+
+ctx.translate(cx,cy);
+ctx.rotate(-t);
+
+
+
+// ----------------
+// mg sinθ
+// ขนานพื้นเอียงลง
+// ----------------
+
+let L1=150;
+
+arrow(
+0,
+-22,
+L1,
+-22,
+"#d60000"
+);
+
+
+ctx.fillStyle="#d60000";
+ctx.font="24px sans-serif";
+ctx.fillText(
+"mg sinθ",
+45,
+-35
+);
+
+
+
+// ----------------
+// mg cosθ
+// ตั้งฉากเข้าพื้น
+// ----------------
+
+let L2=120;
+
+arrow(
+0,
+-22,
+0,
+-22+L2,
+"#008000"
+);
+
+
+ctx.fillStyle="#008000";
+ctx.fillText(
+"mg cosθ",
+15,
+45
+);
+
+
+ctx.restore();
+
+
+requestAnimationFrame(draw);
 
 }
+
 
 draw();
 
