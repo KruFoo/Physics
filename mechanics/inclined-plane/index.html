@@ -325,25 +325,22 @@ by-cmOffset*Math.cos(theta);
 
 
 
-
-
 // ----------------
 // mg sin theta
 // ----------------
 
+if(deg > 0){
 
-let L=
+let L =
 180*Math.sin(theta);
 
 
-
-let finishX=
+let finishX =
 startX-L*Math.cos(theta);
 
 
-let finishY=
+let finishY =
 startY+L*Math.sin(theta);
-
 
 
 
@@ -353,8 +350,6 @@ startY,
 finishX,
 finishY
 );
-
-
 
 
 
@@ -386,6 +381,7 @@ ctx.fillText(
 
 ctx.restore();
 
+}
 
 
 
